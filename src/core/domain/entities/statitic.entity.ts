@@ -1,12 +1,12 @@
 import { Entity } from "src/core/base/entity";
 
-export class StatiticEntity extends Entity {
+export class StatisticEntity extends Entity {
     count: number;
     sum: number;
     avg: number;
     min: number;
     max: number;
-    private timestamp: Date;
+    timestamp: Date;
 
     constructor(count: number, sum: number, avg: number, min: number, max: number, timestamp: Date) {
         super();
