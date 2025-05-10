@@ -1,3 +1,3 @@
 export interface UseCase<Model> {
-    execute(...args: any[]): Promise<Model>;
+    execute(...args: any[]): Promise<Model | void>;
 }
