@@ -4,6 +4,7 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 import { WinstonModule } from 'nest-winston';
 import { instance } from '../logger/winston.logger';
+import { HttpExceptionFilter } from 'src/shared/exceptions/GlobalValidation';
 
 async function bootstrap() {
     const app = await NestFactory.create(AppModule, {
@@ -11,11 +12,11 @@ async function bootstrap() {
             instance: instance,
         }),
     });
-
+    app.useGlobalFilters(new HttpExceptionFilter());
     const config = new DocumentBuilder()
         .setTitle('API')
-        .addTag('users')
-        .addTag('posts')
+        .addTag('transactions')
+        .addTag('statistics')
         .build();
     const document = SwaggerModule.createDocument(app, config);
     SwaggerModule.setup('/', app, document);

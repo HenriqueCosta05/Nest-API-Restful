@@ -1,4 +1,5 @@
 import { Entity } from "src/core/base/entity";
+import { DomainValidationException } from "src/shared/exceptions/DomainValidationException";
 
 export class TransactionEntity extends Entity {
     amount: number;
@@ -6,15 +7,15 @@ export class TransactionEntity extends Entity {
 
     constructor(amount: number, timestamp: Date) {
         if (amount < 0) {
-            throw new Error("Amount must not be negative");
+            throw new DomainValidationException("Amount must not be negative");
         }
 
         if (timestamp && !(timestamp instanceof Date)) {
-            throw new Error("Timestamp must be a valid date in ISO 8601 format");
+            throw new DomainValidationException("Timestamp must be a valid date in ISO 8601 format");
         }
 
         if (timestamp && timestamp > new Date()) {
-            throw new Error("Timestamp must not be in the future");
+            throw new DomainValidationException("Timestamp must not be in the future");
         }
 
         super();
