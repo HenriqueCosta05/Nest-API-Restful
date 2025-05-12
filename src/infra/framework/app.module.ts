@@ -22,7 +22,6 @@ import { UsersModule } from './users/users.module';
             ],
         }), UsersModule,
      ],
-    controllers: [TransactionsController, StatisticsController, HealthController, UsersController],
     providers: [Logger],
 })
 export class AppModule { }
