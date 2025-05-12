@@ -1,39 +1,57 @@
+import { Injectable } from '@nestjs/common';
 import { Entity } from "src/core/base/entity";
 import { Repository } from "src/core/base/repository";
+import { StoreSingleton } from './cache-store.repository';
 
-export class RepositoryCacheMemory<
-    TEntity extends Entity,
-> extends Repository<TEntity> {
+@Injectable()
+export class RepositoryCacheMemory<TEntity extends Entity> extends Repository<TEntity> {
+    private readonly repositoryName: string;
     
-    protected readonly data: TEntity[] = [];
-    constructor() {
+    constructor(
+        private readonly storeService: StoreSingleton,
+        repositoryName?: string
+    ) {
         super();
-        this.data = [];
+        this.repositoryName = repositoryName || this.constructor.name;
     }
+
+    private getDataFromStore(): TEntity[] {
+        return this.storeService.getEntities(this.repositoryName) as TEntity[];
+    }
+    
     async create(data: TEntity): Promise<TEntity> {
+        const entities = this.getDataFromStore();
+        
         data.createdAt = new Date();
         data.updatedAt = new Date();
-        const count = this.data.push(data);
-        return this.data[count - 1];
+        
+        entities.push(data);
+        
+        return data;
     }
     
     async deleteAll(): Promise<void> {
-        this.data.splice(0, this.data.length);
+        const entities = this.getDataFromStore();
+        entities.splice(0, entities.length);
     }
 
-    get(): Promise<TEntity> {
-        return Promise.resolve(this.data[0]);
+    async get(): Promise<TEntity> {
+        const entities = this.getDataFromStore();
+        return entities[0];
     }
 
-    getById(id: string): Promise<TEntity> {
-        const entity = this.data.find((item) => item.id === id);
+    async getById(id: string): Promise<TEntity> {
+        const entities = this.getDataFromStore();
+        const entity = entities.find((item) => item.id === id);
+        
         if (!entity) {
-            throw new Error("data not found");
+            throw new Error("Entity not found");
         }
-        return Promise.resolve(entity);
+        
+        return entity;
     }
     
-    getAll(): Promise<TEntity[]> {
-        return Promise.resolve(this.data);
+    async getAll(): Promise<TEntity[]> {
+        return this.getDataFromStore();
     }
 }

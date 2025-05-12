@@ -3,20 +3,27 @@ import { StatisticsController } from './statistics.controller';
 import { GetStatisticsUseCase } from 'src/use-cases/statistics/get-statistics/get-statistics';
 import { StatisticRepository } from 'src/core/repositories/statistics.repository';
 import { StatisticsCacheMemoryRepository } from 'src/infra/data/cache-memory/statistics-cache-memory.repository';
+import { TransactionsRepository } from 'src/core/repositories/transactions.repository';
+import { TransactionsModule } from '../transactions/transactions.module';
+import { StoreSingletonModule } from 'src/infra/data/async-local-storage.module';
+import { StoreSingleton } from 'src/infra/data/cache-memory/cache-store.repository';
 
 @Module({
-controllers: [StatisticsController],
+    imports: [StoreSingletonModule, TransactionsModule],
+    controllers: [StatisticsController],
     providers: [
         {
             provide: StatisticRepository,
-            useClass: StatisticsCacheMemoryRepository,
+            useFactory: (storeService: StoreSingleton) => 
+                new StatisticsCacheMemoryRepository(storeService),
+            inject: [StoreSingleton],
         },
         {
             provide: GetStatisticsUseCase,
-            useFactory: (repository: StatisticRepository) => {
-                return new GetStatisticsUseCase(repository);
-            },
-            inject: [StatisticRepository],
+            useFactory: (transactionsRepository: TransactionsRepository) =>
+                new GetStatisticsUseCase(transactionsRepository),
+            inject: [TransactionsRepository],
         },
-    ]})
+    ]
+})
 export class StatisticsModule {}

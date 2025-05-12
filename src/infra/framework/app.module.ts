@@ -5,9 +5,10 @@ import { Logger } from 'winston';
 import { TerminusModule } from '@nestjs/terminus';
 import { HealthModule } from './health/health.module';
 import { ThrottlerModule } from '@nestjs/throttler';
+import { StoreSingletonModule } from '../data/async-local-storage.module';
 
 @Module({
-    imports: [TransactionsModule, StatisticsModule, TerminusModule, HealthModule, 
+    imports: [TransactionsModule, StatisticsModule, TerminusModule, HealthModule, StoreSingletonModule,
         ThrottlerModule.forRoot({
             throttlers: [
                 {
@@ -16,7 +17,7 @@ import { ThrottlerModule } from '@nestjs/throttler';
                 },
             ],
         }),
-     ],
+    ],
     providers: [Logger],
 })
 export class AppModule { }

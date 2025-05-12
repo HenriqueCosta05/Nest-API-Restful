@@ -10,11 +10,11 @@ export class TransactionEntity extends Entity {
             throw new DomainValidationException("Amount must not be negative");
         }
 
-        if (timestamp && !(timestamp instanceof Date)) {
+        if (timestamp && isNaN(Date.parse(timestamp.toString()))) {
             throw new DomainValidationException("Timestamp must be a valid date in ISO 8601 format");
         }
 
-        if (timestamp && timestamp > new Date()) {
+        if (timestamp && new Date(timestamp) > new Date()) {
             throw new DomainValidationException("Timestamp must not be in the future");
         }
 
