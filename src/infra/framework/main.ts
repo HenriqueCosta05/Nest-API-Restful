@@ -1,4 +1,4 @@
-import { Logger } from '@nestjs/common';
+import { Logger, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
@@ -12,6 +12,17 @@ async function bootstrap() {
             instance: instance,
         }),
     });
+    app.useGlobalPipes(
+        new ValidationPipe({
+            whitelist: true,
+            transform: true,
+            forbidNonWhitelisted: true,
+            transformOptions: {
+                enableImplicitConversion: true,
+            },
+        })
+    );
+    
     app.useGlobalFilters(new HttpExceptionFilter());
     const config = new DocumentBuilder()
         .setTitle('API')

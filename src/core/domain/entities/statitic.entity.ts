@@ -42,12 +42,11 @@ export class StatisticEntity extends Entity {
         this.timestamp = timestamp;
     }
 
-    static createFromTransactions(transactions: TransactionEntity[]): StatisticEntity {
-
+        static createFromTransactions(transactions: TransactionEntity[]): StatisticEntity {
         const sixtySecondsAgo = new Date(Date.now() - 60 * 1000);
         
         const recentTransactions = transactions.filter(transaction => {
-            if (!transaction.timestamp) {
+            if (!transaction || !transaction.timestamp) {
                 return false;
             }
             
@@ -62,21 +61,22 @@ export class StatisticEntity extends Entity {
             
             return txTimestamp >= sixtySecondsAgo;
         });
-
+    
         const totalCount = recentTransactions.length;
         
         if (totalCount === 0) {
             return new StatisticEntity(0, 0, 0, 0, 0, new Date());
         }
-
+    
         const total = recentTransactions.reduce((acc, transaction) => {
-            return acc + transaction.amount;
+            return acc + (typeof transaction.amount === 'number' ? transaction.amount : 0);
         }, 0);
-
-        const min = Math.min(...recentTransactions.map(transaction => transaction.amount));
-        const max = Math.max(...recentTransactions.map(transaction => transaction.amount));
+    
+        const amounts = recentTransactions.map(transaction => transaction.amount);
+        const min = Math.min(...amounts);
+        const max = Math.max(...amounts);
         const avg = total / totalCount;
-
+    
         return new StatisticEntity(totalCount, total, avg, min, max, new Date());
     }
 }
