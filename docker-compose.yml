@@ -1,0 +1,26 @@
+services:
+  api:
+    container_name: mid-level-nest
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: production
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 15s
+    volumes:
+      - ./logs:/usr/src/app/logs
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge

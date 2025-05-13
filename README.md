@@ -1,98 +1,126 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+# API de Estatísticas de Transações
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+Uma aplicação NestJS de alta performance que fornece uma API RESTful para registrar transações e calcular estatísticas em tempo real dos últimos 60 segundos. Construída seguindo princípios de arquitetura limpa e design orientado a domínio.
 
-## Description
+## Visão Geral do Projeto
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+Esta aplicação foi projetada para lidar com transações financeiras com validação rigorosa de dados, fornecendo cálculos estatísticos em tempo real sobre os valores das transações. Possui armazenamento em memória para desempenho ideal, mantendo uma arquitetura limpa e de fácil manutenção.
 
-## Project setup
+## Arquitetura
 
-```bash
-$ yarn install
-```
+O projeto segue os princípios de Arquitetura Limpa (Clean Architecture) e Design Orientado a Domínio (DDD) com as seguintes camadas:
 
-## Compile and run the project
+- **Core**: Contém a lógica de negócios e modelos de domínio
+  - **Base**: Classes abstratas e interfaces compartilhadas pelo domínio
+  - **Domain**: Entidades de domínio e mapeadores
+  - **Repositories**: Interfaces de repositório
 
-```bash
-# development
-$ yarn run start
+- **Use Cases**: Regras de negócio específicas da aplicação
+  - **Transactions**: Casos de uso para operações de transações
+  - **Statistics**: Casos de uso para operações de estatísticas
 
-# watch mode
-$ yarn run start:dev
+- **Infrastructure**: Implementações e preocupações externas
+  - **Data**: Implementação de armazenamento de dados (cache em memória)
+  - **Framework**: Código específico do NestJS (controllers, modules)
+  - **Logger**: Implementação de log com Winston
 
-# production mode
-$ yarn run start:prod
-```
+- **Shared**: Utilitários comuns e DTOs
 
-## Run tests
+## Recursos Principais
 
-```bash
-# unit tests
-$ yarn run test
+- Criação de transações com valor e timestamp
+- Exclusão de todas as transações
+- Obtenção de estatísticas em tempo real para transações dos últimos 60 segundos
+- Validação de dados e tratamento de erros
+- Endpoint de verificação de saúde (health check)
+- Limitação de taxa (rate limiting)
+- Documentação Swagger
+- Implantação com Docker
+- Cobertura abrangente de testes
 
-# e2e tests
-$ yarn run test:e2e
+## Endpoints da API
 
-# test coverage
-$ yarn run test:cov
-```
+### Transações
 
-## Deployment
+- `POST /transactions`: Criar uma nova transação
+  - Corpo: `{ "amount": number, "timestamp": string }`
+  - Resposta: 201 Created com objeto da transação
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+- `DELETE /transactions`: Excluir todas as transações
+  - Resposta: 204 No Content
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+### Estatísticas
+
+- `GET /statistics`: Obter estatísticas das transações dos últimos 60 segundos
+  - Resposta: `{ "count": number, "sum": number, "avg": number, "min": number, "max": number, "timestamp": string }`
+
+### Saúde
+
+- `GET /health`: Verificar o status de saúde da API
+
+## Instalação
 
 ```bash
-$ yarn install -g @nestjs/mau
-$ mau deploy
+# Instalar dependências
+yarn install
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+## Executando a Aplicação
 
-## Resources
+```bash
+# Modo de desenvolvimento
+yarn start:dev
 
-Check out a few resources that may come in handy when working with NestJS:
+# Modo de produção
+yarn build
+yarn start:prod
+```
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+## Testes
 
-## Support
+```bash
+# Testes unitários
+yarn test
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+# Testes E2E
+yarn test:e2e
 
-## Stay in touch
+# Testes com cobertura
+yarn test:cov
+```
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+## Suporte Docker
 
-## License
+A aplicação pode ser executada em um contêiner Docker usando o Dockerfile e o docker-compose.yml fornecidos:
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+```bash
+# Construir e iniciar o contêiner
+docker-compose up -d
+
+# Parar o contêiner
+docker-compose down
+```
+
+## Tecnologias Utilizadas
+
+- NestJS
+- TypeScript
+- Jest para testes
+- Winston para logging
+- Swagger para documentação da API
+- Docker para conteinerização
+- Class Validator & Class Transformer para validação e transformação
+
+## Estrutura do Projeto
+
+```
+src/
+  core/              # Núcleo do domínio (entidades, interfaces de repositórios)
+  use-cases/         # Casos de uso da aplicação
+  infra/             # Implementações de infraestrutura
+    data/            # Armazenamento de dados (implementação em memória)
+    framework/       # Código específico do NestJS
+    logger/          # Implementação de logging
+  shared/            # Utilitários compartilhados, DTOs, exceções
+```
